@@ -15,7 +15,11 @@ env/
 # =====================================================================
 # Archivos temporales o duplicados de construcción no usados por la web
 # =====================================================================
+<<<<<<< HEAD
 Diapositivas_PNG/temp_*.pdf
+=======
+Diapositivas_PNG/temp_ejercicios_completos.pdf
+>>>>>>> 8ab872533583fd240d0a7a10eeb15241408a1cff
 Redes_AulaClic_Ejercicios_y_Ejemplos_Diapositivas.pdf
 *.log
 run_log.txt

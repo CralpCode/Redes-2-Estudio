@@ -129,11 +129,14 @@
             class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5">
             <span>🗂️</span><span>Curso, PDFs y Archivos .MD</span>
           </button>
+<<<<<<< HEAD
           <button @click="vistaActiva = 'examen'"
             :class="vistaActiva === 'examen' ? 'bg-gradient-to-r from-amber-500 to-rose-600 text-white shadow-sm' : 'text-amber-600 dark:text-amber-400 hover:bg-amber-500/10'"
             class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center gap-1.5 border border-amber-500/30">
             <span>🎓</span><span>Examen (examen.md)</span>
           </button>
+=======
+>>>>>>> 8ab872533583fd240d0a7a10eeb15241408a1cff
         </nav>
 
         <!-- Barra de progreso rápido + Botón Modo Oscuro -->
@@ -945,7 +948,11 @@
               Tema {{ flashcardsFiltradas[flashcardIdx].tema }} · {{ flashcardGirada ? 'RESPUESTA' : 'PREGUNTA (Haz clic para girar)' }}
             </span>
             <p class="font-bold text-base sm:text-lg leading-relaxed">
+<<<<<<< HEAD
               {{ flashcardGirada ? (flashcardsFiltradas[flashcardIdx].dorso || flashcardsFiltradas[flashcardIdx].reverso) : flashcardsFiltradas[flashcardIdx].frente }}
+=======
+              {{ flashcardGirada ? flashcardsFiltradas[flashcardIdx].reverso : flashcardsFiltradas[flashcardIdx].frente }}
+>>>>>>> 8ab872533583fd240d0a7a10eeb15241408a1cff
             </p>
           </div>
 
@@ -960,6 +967,7 @@
         </div>
 
         <!-- Formulario / Chuleta Técnica de Fórmulas -->
+<<<<<<< HEAD
         <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
           <h2 class="font-extrabold text-base">📐 Formulario Maestro de Redes (Resumen para Examen)</h2>
           <div v-for="grupo in formulario" :key="grupo.categoria" class="space-y-2">
@@ -1188,6 +1196,22 @@
               </button>
             </div>
             <pre class="p-4 rounded-xl bg-slate-950 text-slate-100 font-mono text-xs sm:text-sm whitespace-pre-wrap">{{ examenMd.rawMarkdown }}</pre>
+=======
+        <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+          <h2 class="font-extrabold text-base">📐 Formulario Maestro de Redes (Resumen para Examen)</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div v-for="f in formulario" :key="f.nombre"
+              class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-xs sm:text-sm text-indigo-600 dark:text-indigo-400">{{ f.nombre }}</span>
+                <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700">{{ f.tema }}</span>
+              </div>
+              <div class="font-mono text-xs sm:text-sm font-bold bg-white dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-800">
+                {{ f.formula }}
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400">{{ f.uso }}</p>
+            </div>
+>>>>>>> 8ab872533583fd240d0a7a10eeb15241408a1cff
           </div>
         </div>
       </section>
