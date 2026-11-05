@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AulaClic Redes — Plataforma Interactiva de Estudio, Ejercicios y Laboratorios (Vue 3)</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- KaTeX CSS & JS para fórmulas matemáticas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <!-- Marked.js para renderizar las soluciones Markdown -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Vue 3 Global Build -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    [v-cloak] { display: none; }
+    /* Estilos tipográficos para el Markdown renderizado */
+    .markdown-body h1 { font-size: 1.45rem; font-weight: 800; margin-top: 0.5rem; margin-bottom: 0.75rem; color: #6366f1; }
+    .dark .markdown-body h1 { color: #818cf8; }
+    .markdown-body h2 { font-size: 1.2rem; font-weight: 700; margin-top: 1.25rem; margin-bottom: 0.6rem; padding-bottom: 0.3rem; border-bottom: 1px solid rgba(148, 163, 184, 0.25); color: #0284c7; }
+    .dark .markdown-body h2 { color: #38bdf8; }
+    .markdown-body h3 { font-size: 1.05rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.4rem; color: #059669; }
+    .dark .markdown-body h3 { color: #34d399; }
+    .markdown-body p { margin-bottom: 0.75rem; line-height: 1.65; }
+    .markdown-body ul, .markdown-body ol { margin-left: 1.4rem; margin-bottom: 0.85rem; }
+    .markdown-body ul { list-style-type: disc; }
+    .markdown-body ol { list-style-type: decimal; }
+    .markdown-body li { margin-bottom: 0.3rem; line-height: 1.6; }
+    .markdown-body blockquote {
+      border-left: 4px solid #6366f1;
+      padding: 0.6rem 1rem;
+      margin: 0.75rem 0;
+      background: rgba(99, 102, 241, 0.08);
+      border-radius: 0 0.5rem 0.5rem 0;
+    }
+    .markdown-body table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.88rem; }
+    .markdown-body th, .markdown-body td { border: 1px solid rgba(148, 163, 184, 0.3); padding: 0.5rem 0.65rem; text-align: left; }
+    .markdown-body th { background: rgba(99, 102, 241, 0.12); font-weight: 700; }
+    .markdown-body code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: rgba(148, 163, 184, 0.18);
+      padding: 0.12rem 0.35rem;
+      border-radius: 0.25rem;
+      font-size: 0.86em;
+    }
+    .markdown-body pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 0.85rem 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      margin: 0.85rem 0;
+    }
+    .markdown-body pre code { background: transparent; padding: 0; color: inherit; }
+    .markdown-body hr { border: 0; border-top: 1px solid rgba(148, 163, 184, 0.25); margin: 1.2rem 0; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200">
+  <div id="app" v-cloak class="flex flex-col min-h-screen">
+
+    <!-- BARRA SUPERIOR DE NAVEGACIÓN -->
+    <header class="sticky top-0 z-40 backdrop-blur-md bg-white/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 shadow-sm">
+      <div class="max-w-[1600px] mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+        <!-- Logo y título -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 flex items-center justify-center text-white font-black text-lg shadow">
+            AC
+          </div>
+          <div>
+            <h1 class="font-extrabold text-base sm:text-lg tracking-tight leading-none flex items-center gap-2">
+              <span>Redes de Computadores — AulaClic</span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-semibold">Vue 3 Studio</span>
+            </h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              11 Temas · 176 Subtemas · 1.421 Diapositivas · 42 Ejercicios Resueltos · 5 Calculadoras · Cuestionarios
+            </p>
+          </div>
+        </div>
+
+        <!-- Pestañas de los 6 Módulos -->
+        <nav class="flex flex-wrap items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl">
+          <button @click="vistaActiva = 'ejercicios'"
+            :class="vistaActiva === 'ejercicios' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700/60'"
+            class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5">
+            <span>📘</span><span>Ejercicios Resueltos (42)</span>
+          </button>
+          <button @click="vistaActiva = 'buscador'"
+            :class="vistaActiva === 'buscador' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700/60'"
+            class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5">
+            <span>🔍</span><span>Buscador Global (1.421)</span>
+          </button>
+          <button @click="vistaActiva = 'cuestionarios'"
+            :class="vistaActiva === 'cuestionarios' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700/60'"
+            class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5">
+            <span>🎯</span><span>Cuestionarios y Examen</span>
+          </button>
+          <button @click="vistaActiva = 'calculadoras'"
+            :class="vistaActiva === 'calculadoras' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700/60'"
+            class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5">
+            <span>🧮</span><span>Calculadoras de Red</span>
+          </button>
+          <button @click="vistaActiva = 'flashcards'"
+            :class="vistaActiva === 'flashcards' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700/60'"
+            class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5">
+            <span>⚡</span><span>Flashcards y Fórmulas</span>
+          </button>
+          <button @click="vistaActiva = 'temario'"
+            :class="vistaActiva === 'temario' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700/60'"
+            class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5">
+            <span>🗂️</span><span>Curso, PDFs y Archivos .MD</span>
+          </button>
+          <button @click="vistaActiva = 'examen'"
+            :class="vistaActiva === 'examen' ? 'bg-gradient-to-r from-amber-500 to-rose-600 text-white shadow-sm' : 'text-amber-600 dark:text-amber-400 hover:bg-amber-500/10'"
+            class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center gap-1.5 border border-amber-500/30">
+            <span>🎓</span><span>Examen (examen.md)</span>
+          </button>
+        </nav>
+
+        <!-- Barra de progreso rápido + Botón Modo Oscuro -->
+        <div class="flex items-center gap-3">
+          <div class="hidden xl:flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-xl text-xs">
+            <span class="font-semibold text-emerald-600 dark:text-emerald-400">✔ {{ statsProgreso.dominados }}/{{ statsProgreso.total }}</span>
+            <div class="w-20 h-2 bg-slate-300 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div class="h-full bg-emerald-500 transition-all" :style="{ width: statsProgreso.porcentaje + '%' }"></div>
+            </div>
+            <span class="text-slate-500 dark:text-slate-400">{{ statsProgreso.porcentaje }}%</span>
+          </div>
+          <button @click="modoOscuro = !modoOscuro"
+            class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-semibold transition"
+            :title="modoOscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+            {{ modoOscuro ? '☀️' : '🌙' }}
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="flex-1 max-w-[1600px] w-full mx-auto px-4 py-4">
+
+      <!-- =================================================================== -->
+      <!-- MÓDULO 1: EXPLORADOR DE EJERCICIOS Y SOLUCIONES EXPLICADAS (42)     -->
+      <!-- =================================================================== -->
+      <section v-if="vistaActiva === 'ejercicios'" class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+        <!-- Panel izquierdo: Filtros y lista de los 42 ejercicios -->
+        <aside class="lg:col-span-4 xl:col-span-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3.5 shadow-sm lg:sticky lg:top-20 max-h-[calc(100vh-6rem)] flex flex-col">
+          <div class="space-y-2.5 pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div class="flex items-center justify-between gap-1">
+              <h2 class="font-bold text-xs sm:text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Ejercicios ({{ ejerciciosFiltrados.length }})
+              </h2>
+              <div class="flex items-center gap-1.5">
+                <button @click="abrirVisorMdPorId('md-indice-general', 'md-render')"
+                  class="text-[11px] px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 font-bold">
+                  📝 Índice .MD
+                </button>
+                <button @click="abrirVisorPdf('../Redes_AulaClic_Ejercicios.pdf', 'Todos los Ejercicios del Curso (226 diapos)')"
+                  class="text-[11px] px-2 py-0.5 rounded bg-cyan-50 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-100 font-bold">
+                  📄 PDF Global
+                </button>
+              </div>
+            </div>
+
+            <!-- Buscador instantáneo de ejercicios -->
+            <input v-model="busquedaEj" type="text"
+              placeholder="Buscar ejercicio, fórmula, protocolo..."
+              class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+
+            <!-- Filtros de Tema y Categoría -->
+            <div class="grid grid-cols-2 gap-2">
+              <select v-model.number="filtroTemaEj"
+                class="px-2.5 py-1.5 text-xs rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <option :value="0">Todos los Temas (1-10)</option>
+                <option v-for="t in curso.filter(c => c.numero <= 10)" :key="t.numero" :value="t.numero">
+                  T{{ t.numero }}: {{ t.titulo }}
+                </option>
+              </select>
+              <select v-model="filtroCategoriaEj"
+                class="px-2.5 py-1.5 text-xs rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <option v-for="cat in categoriasDisponibles" :key="cat" :value="cat">{{ cat }}</option>
+              </select>
+            </div>
+
+            <!-- Filtro de Estado de Estudio -->
+            <div class="flex items-center gap-1 text-xs">
+              <button @click="filtroEstadoEj = 'todos'"
+                :class="filtroEstadoEj === 'todos' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
+                class="flex-1 py-1 rounded-lg font-medium transition">Todos</button>
+              <button @click="filtroEstadoEj = 'dominado'"
+                :class="filtroEstadoEj === 'dominado' ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400'"
+                class="flex-1 py-1 rounded-lg font-medium transition">✔ Dominados</button>
+              <button @click="filtroEstadoEj = 'repaso'"
+                :class="filtroEstadoEj === 'repaso' ? 'bg-amber-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-amber-600 dark:text-amber-400'"
+                class="flex-1 py-1 rounded-lg font-medium transition">📌 Repasar</button>
+            </div>
+          </div>
+
+          <!-- Lista desplazable de ejercicios -->
+          <div class="overflow-y-auto flex-1 divide-y divide-slate-100 dark:divide-slate-800/70 mt-2 pr-1">
+            <button v-for="ej in ejerciciosFiltrados" :key="ej.id"
+              @click="seleccionarEjercicio(ej)"
+              :class="ejercicioSeleccionado && ejercicioSeleccionado.id === ej.id
+                ? 'bg-indigo-50/90 dark:bg-indigo-950/60 border-l-4 border-indigo-600'
+                : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'"
+              class="w-full text-left p-2.5 transition flex items-start justify-between gap-2 rounded-lg">
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/70 text-indigo-700 dark:text-indigo-300">
+                    T{{ ej.tema }} · {{ ej.codigo }}
+                  </span>
+                  <span class="text-[11px] text-slate-400">{{ ej.rango }}</span>
+                </div>
+                <p class="font-semibold text-xs sm:text-sm mt-1 truncate" :title="ej.titulo">{{ ej.titulo }}</p>
+                <span class="inline-block text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{{ ej.categoria }}</span>
+              </div>
+              <div class="shrink-0 text-xs">
+                <span v-if="progresoEjercicios[ej.id] === 'dominado'" title="Dominado">✅</span>
+                <span v-else-if="progresoEjercicios[ej.id] === 'repaso'" title="Para repasar">📌</span>
+              </div>
+            </button>
+          </div>
+        </aside>
+
+        <!-- Panel derecho: Visor de Diapositivas + Explicación Markdown + Notas -->
+        <div v-if="ejercicioSeleccionado" class="lg:col-span-8 xl:col-span-9 space-y-4">
+          <!-- Cabecera del ejercicio activo -->
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="flex flex-wrap items-center gap-2 text-xs">
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-600 text-white font-bold">
+                  Tema {{ ejercicioSeleccionado.tema }}: {{ ejercicioSeleccionado.temaTitulo }}
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 font-semibold">
+                  {{ ejercicioSeleccionado.categoria }}
+                </span>
+                <span class="text-slate-500 dark:text-slate-400 font-mono">
+                  Subtema {{ ejercicioSeleccionado.codigo }} ({{ ejercicioSeleccionado.rango }})
+                </span>
+              </div>
+              <h2 class="text-lg sm:text-xl font-extrabold mt-1.5">
+                {{ ejercicioSeleccionado.titulo }}
+              </h2>
+            </div>
+
+            <!-- Botones de Estado y Visor Integrado (.MD y .PDF dentro de la App) -->
+            <div class="flex flex-wrap items-center gap-2">
+              <button @click="guardarProgreso(ejercicioSeleccionado.id, 'dominado')"
+                :class="progresoEjercicios[ejercicioSeleccionado.id] === 'dominado'
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-500/20'"
+                class="px-3 py-1.5 rounded-xl text-xs font-bold transition">
+                ✔ Dominado
+              </button>
+              <button @click="guardarProgreso(ejercicioSeleccionado.id, 'repaso')"
+                :class="progresoEjercicios[ejercicioSeleccionado.id] === 'repaso'
+                  ? 'bg-amber-500 text-white'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-amber-500/20'"
+                class="px-3 py-1.5 rounded-xl text-xs font-bold transition">
+                📌 Para repasar
+              </button>
+              <button @click="abrirVisorEjercicio(ejercicioSeleccionado, 'md-render')"
+                class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-500 shadow-sm transition">
+                📝 Abrir Archivo .MD en la App
+              </button>
+              <button @click="abrirVisorEjercicio(ejercicioSeleccionado, 'pdf')"
+                class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 transition">
+                📄 Abrir PDF en la App
+              </button>
+              <button @click="abrirVisorEjercicio(ejercicioSeleccionado, 'split')"
+                class="px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-50 dark:bg-cyan-950/80 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-100 transition">
+                ⚖️ Vista Dividida (PDF + .MD)
+              </button>
+            </div>
+          </div>
+
+          <!-- Galería interactiva de las diapositivas del ejercicio -->
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div class="flex items-center gap-2">
+                <h3 class="font-bold text-sm">
+                  🖼️ Diapositivas Originales del Ejercicio ({{ slideIdxActual + 1 }} de {{ ejercicioSeleccionado.slides.length }})
+                </h3>
+                <span v-if="ejercicioSeleccionado.slides[slideIdxActual]"
+                  class="text-xs px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono">
+                  Diapositiva #{{ ejercicioSeleccionado.slides[slideIdxActual].num }}
+                </span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button @click="slideIdxActual = Math.max(0, slideIdxActual - 1)"
+                  :disabled="slideIdxActual === 0"
+                  class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 disabled:opacity-40">
+                  ◀ Anterior
+                </button>
+                <button v-for="(s, idx) in ejercicioSeleccionado.slides" :key="s.num"
+                  @click="slideIdxActual = idx"
+                  :class="slideIdxActual === idx ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
+                  class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition">
+                  #{{ s.num }}
+                </button>
+                <button @click="slideIdxActual = Math.min(ejercicioSeleccionado.slides.length - 1, slideIdxActual + 1)"
+                  :disabled="slideIdxActual === ejercicioSeleccionado.slides.length - 1"
+                  class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 disabled:opacity-40">
+                  Siguiente ▶
+                </button>
+              </div>
+            </div>
+
+            <!-- Imagen principal + transcripción OCR lateral -->
+            <div v-if="ejercicioSeleccionado.slides[slideIdxActual]" class="grid grid-cols-1 xl:grid-cols-12 gap-4 items-center">
+              <div class="xl:col-span-7 flex flex-col items-center bg-slate-100 dark:bg-slate-950 rounded-xl p-2 border border-slate-200 dark:border-slate-800">
+                <img :src="ejercicioSeleccionado.slides[slideIdxActual].img"
+                  :alt="'Diapositiva ' + ejercicioSeleccionado.slides[slideIdxActual].num"
+                  @click="modalImagenUrl = ejercicioSeleccionado.slides[slideIdxActual].img"
+                  class="max-h-[420px] w-auto object-contain rounded-lg cursor-zoom-in shadow" />
+                <span class="text-[11px] text-slate-400 mt-1.5">Haz clic sobre la diapositiva para ampliarla a pantalla completa</span>
+              </div>
+              <div class="xl:col-span-5 bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3.5 border border-slate-200 dark:border-slate-800 h-full">
+                <div class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-1.5">
+                  Texto extraído de la Diapositiva #{{ ejercicioSeleccionado.slides[slideIdxActual].num }}
+                </div>
+                <pre class="text-xs whitespace-pre-wrap font-sans leading-relaxed text-slate-700 dark:text-slate-300 max-h-[360px] overflow-y-auto">{{ ejercicioSeleccionado.slides[slideIdxActual].ocr }}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Solución Explicada Paso a Paso (Markdown + KaTeX) -->
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
+              <h3 class="font-extrabold text-base sm:text-lg text-indigo-600 dark:text-indigo-400">
+                📖 Solución Detallada, Fundamento Teórico y Porqué Paso a Paso ({{ ejercicioSeleccionado.slug }}.md)
+              </h3>
+              <div class="flex items-center gap-2">
+                <button @click="mostrarOcrAnexo = !mostrarOcrAnexo"
+                  class="text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-semibold hover:bg-slate-200 transition">
+                  {{ mostrarOcrAnexo ? '📖 Ver Vista Renderizada' : '💻 Ver Código Fuente .MD Original' }}
+                </button>
+                <button @click="abrirVisorMdPorId('md-tema-' + String(ejercicioSeleccionado.tema).padStart(2, '0'), 'md-render')"
+                  class="text-xs px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 font-semibold hover:bg-indigo-100 transition">
+                  📚 Solucionario .MD Completo del Tema {{ ejercicioSeleccionado.tema }}
+                </button>
+              </div>
+            </div>
+            <div v-if="!mostrarOcrAnexo"
+              @click="manejarClickMarkdown($event)"
+              class="markdown-body math-container text-sm sm:text-base"
+              v-html="renderMarkdown(ejercicioSeleccionado.mdArchivoCompleto || ejercicioSeleccionado.markdown)">
+            </div>
+            <div v-else class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-slate-400">Archivo: Ejercicios_Por_Tema_y_Subtema/{{ ejercicioSeleccionado.temaFolder }}/{{ ejercicioSeleccionado.slug }}.md</span>
+                <button @click="copiarMdActual(ejercicioSeleccionado.mdArchivoCompleto || ejercicioSeleccionado.markdown)"
+                  class="text-xs px-3 py-1 rounded-lg bg-indigo-600 text-white font-bold">
+                  {{ copiadoMdExito ? '✔ Copiado al portapapeles' : '📋 Copiar Markdown (.MD)' }}
+                </button>
+              </div>
+              <pre class="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto whitespace-pre-wrap max-h-[600px] overflow-y-auto">{{ ejercicioSeleccionado.mdArchivoCompleto || ejercicioSeleccionado.markdown }}</pre>
+            </div>
+          </div>
+
+          <!-- Bloc de Notas Personales del Estudiante -->
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+            <label class="block font-bold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+              ✏️ Mis Apuntes Personales sobre este Ejercicio (Se guardan automáticamente en este navegador)
+            </label>
+            <textarea
+              :value="notasEjercicios[ejercicioSeleccionado.id] || ''"
+              @input="guardarNota(ejercicioSeleccionado.id, $event.target.value)"
+              rows="3"
+              placeholder="Escribe aquí tus recordatorios, trucos de examen o dudas sobre este ejercicio..."
+              class="w-full p-3 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- MÓDULO 2: BUSCADOR GLOBAL EN LAS 1.421 DIAPOSITIVAS Y 42 EJERCICIOS -->
+      <!-- =================================================================== -->
+      <section v-if="vistaActiva === 'buscador'" class="space-y-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold">🔍 Buscador Instantáneo en las 1.421 Diapositivas y Soluciones</h2>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                Busca cualquier término, fórmula, sigla (CRC, ARP, VRRP, OSPF, BGP, SRTT, LFN, NAPT) o enunciado en todo el curso.
+              </p>
+            </div>
+            <span class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+              {{ resultadosGlobales.length }} coincidencias mostradas
+            </span>
+          </div>
+
+          <!-- Controles de búsqueda -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+            <div class="md:col-span-7">
+              <input v-model="queryGlobal" type="text"
+                placeholder="Escribe al menos 2 letras (ej. 'Tiempo de servicio', '194.125', 'Dijkstra', 'Shannon')..."
+                class="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+            <div class="md:col-span-3">
+              <select v-model.number="temaFiltroGlobal"
+                class="w-full px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+                <option :value="0">Todos los Temas (1 al 11)</option>
+                <option v-for="t in curso" :key="t.numero" :value="t.numero">Tema {{ t.numero }}: {{ t.titulo }}</option>
+              </select>
+            </div>
+            <div class="md:col-span-2 flex items-center">
+              <label class="flex items-center gap-2 text-xs sm:text-sm font-medium cursor-pointer select-none">
+                <input v-model="soloConEjercicio" type="checkbox" class="w-4 h-4 rounded text-indigo-600" />
+                <span>Solo en Ejercicios</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Etiquetas de búsqueda rápida sugerida -->
+          <div class="flex flex-wrap items-center gap-1.5 pt-1">
+            <span class="text-xs text-slate-400 mr-1">Búsquedas rápidas:</span>
+            <button v-for="sug in sugerenciasBusqueda" :key="sug"
+              @click="queryGlobal = sug"
+              class="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white transition font-medium">
+              {{ sug }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Resultados de la búsqueda -->
+        <div v-if="queryGlobal.trim().length < 2" class="text-center py-12 text-slate-400">
+          Escribe arriba cualquier concepto o pulsa una etiqueta de búsqueda rápida para explorar las 1.421 diapositivas.
+        </div>
+        <div v-else-if="resultadosGlobales.length === 0" class="text-center py-12 text-slate-400">
+          No se encontraron diapositivas con «{{ queryGlobal }}». Prueba con otra palabra clave.
+        </div>
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div v-for="r in resultadosGlobales" :key="r.id"
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">
+                  Tema {{ r.temaNum }} · Diapositiva #{{ r.slideNum }}
+                </span>
+                <span v-if="r.ejercicio"
+                  class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                  ★ Ejercicio {{ r.ejercicio.codigo }}
+                </span>
+              </div>
+              <img :src="r.img" :alt="'Slide ' + r.slideNum"
+                @click="modalImagenUrl = r.img"
+                class="w-full h-44 object-contain bg-slate-100 dark:bg-slate-950 rounded-xl p-1 cursor-zoom-in mb-2.5 border border-slate-200 dark:border-slate-800" />
+              <div class="text-xs text-slate-600 dark:text-slate-300 line-clamp-4 whitespace-pre-line leading-relaxed"
+                v-html="resaltarTexto(r.ocr, queryGlobal)">
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+              <button @click="abrirVisorPdf(r.pdfTema, 'PDF Completo del Tema ' + r.temaNum)"
+                class="text-slate-500 hover:text-indigo-500 font-semibold">
+                📄 Abrir PDF Tema {{ r.temaNum }}
+              </button>
+              <div v-if="r.ejercicio" class="flex items-center gap-1.5">
+                <button @click="abrirVisorEjercicio(r.ejercicio, 'split')"
+                  class="px-2.5 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 font-bold hover:bg-cyan-100 transition">
+                  ⚖️ PDF + .MD
+                </button>
+                <button @click="seleccionarEjercicio(r.ejercicio, r.slideNum)"
+                  class="px-3 py-1 rounded-lg bg-indigo-600 text-white font-bold hover:bg-indigo-500 transition">
+                  Ver Solución →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- MÓDULO 3: CUESTIONARIOS POR CADA TEMA (1-11) Y SIMULACRO GLOBAL     -->
+      <!-- =================================================================== -->
+      <section v-if="vistaActiva === 'cuestionarios'" class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+        <!-- Selector lateral de Tema de Cuestionario -->
+        <aside class="lg:col-span-4 xl:col-span-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-2">
+          <h2 class="font-extrabold text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+            Selecciona Cuestionario
+          </h2>
+          <button @click="seleccionarTemaQuiz('global')"
+            :class="temaQuizActivo === 'global' ? 'bg-gradient-to-r from-indigo-600 to-cyan-600 text-white shadow' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700'"
+            class="w-full text-left p-3 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-between">
+            <span>🏆 Simulacro de Examen Global (15 preg.)</span>
+            <span v-if="puntuacionesQuiz['global']" class="text-xs px-2 py-0.5 rounded bg-black/20">
+              {{ puntuacionesQuiz['global'].porcentaje }}%
+            </span>
+          </button>
+
+          <div class="divide-y divide-slate-100 dark:divide-slate-800 pt-1">
+            <button v-for="t in curso" :key="t.numero"
+              @click="seleccionarTemaQuiz(t.numero)"
+              :class="temaQuizActivo === t.numero ? 'bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-300 font-bold' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'"
+              class="w-full text-left py-2.5 px-3 rounded-lg text-xs sm:text-sm transition flex items-center justify-between">
+              <span class="truncate pr-2">Tema {{ t.numero }}: {{ t.titulo }}</span>
+              <span v-if="puntuacionesQuiz[t.numero]"
+                class="shrink-0 text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                {{ puntuacionesQuiz[t.numero].aciertos }}/{{ puntuacionesQuiz[t.numero].total }}
+              </span>
+            </button>
+          </div>
+        </aside>
+
+        <!-- Área de preguntas del cuestionario -->
+        <div class="lg:col-span-8 xl:col-span-9 space-y-4">
+          <!-- Marcador en vivo -->
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 class="text-lg font-extrabold">
+                {{ temaQuizActivo === 'global' ? '🏆 Simulacro Global Aleatorio (Temas 1 al 11)' : '🎯 Cuestionario de Autoevaluación — Tema ' + temaQuizActivo }}
+              </h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Selecciona una respuesta en cada pregunta para verificar al instante la justificación técnica y matemática.
+              </p>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="text-xs font-bold px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800">
+                Respondidas: {{ resumenQuizActual.respondidas }}/{{ resumenQuizActual.total }} ·
+                <span class="text-emerald-600 dark:text-emerald-400">Aciertos: {{ resumenQuizActual.aciertos }}</span> ·
+                <span class="text-rose-500">Fallos: {{ resumenQuizActual.fallos }}</span>
+                ({{ resumenQuizActual.porcentaje }}%)
+              </div>
+              <button @click="seleccionarTemaQuiz(temaQuizActivo)"
+                class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-500 transition">
+                🔄 Reiniciar
+              </button>
+            </div>
+          </div>
+
+          <!-- Tarjetas de preguntas -->
+          <div v-for="(q, index) in preguntasQuizActual" :key="q.id"
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+            <div class="flex items-center justify-between gap-2 text-xs">
+              <span class="font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+                Pregunta #{{ index + 1 }} <span v-if="q.temaNum">· Tema {{ q.temaNum }}</span>
+              </span>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-semibold">Dificultad: {{ q.dificultad }}</span>
+                <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-slate-500">{{ q.ref }}</span>
+              </div>
+            </div>
+
+            <p class="font-bold text-sm sm:text-base leading-snug">{{ q.pregunta }}</p>
+
+            <div class="grid grid-cols-1 gap-2 pt-1">
+              <button v-for="(op, idxOp) in q.opciones" :key="idxOp"
+                @click="responderPregunta(q.id, idxOp)"
+                :class="[
+                  respuestasUsuario[q.id] === undefined
+                    ? 'bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border-slate-200 dark:border-slate-700'
+                    : idxOp === q.correcta
+                      ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-emerald-900 dark:text-emerald-200 font-semibold'
+                      : respuestasUsuario[q.id] === idxOp
+                        ? 'bg-rose-50 dark:bg-rose-950/60 border-rose-500 text-rose-900 dark:text-rose-200'
+                        : 'bg-slate-50 dark:bg-slate-800/30 border-slate-200 dark:border-slate-800 opacity-60'
+                ]"
+                class="text-left p-3 rounded-xl border text-xs sm:text-sm transition flex items-center justify-between gap-2">
+                <span><strong class="mr-1.5">{{ ['A', 'B', 'C', 'D'][idxOp] }}.</strong> {{ op }}</span>
+                <span v-if="respuestasUsuario[q.id] !== undefined">
+                  <template v-if="idxOp === q.correcta">✅</template>
+                  <template v-else-if="respuestasUsuario[q.id] === idxOp">❌</template>
+                </span>
+              </button>
+            </div>
+
+            <!-- Explicación detallada al responder -->
+            <div v-if="mostrarExplicacionesQuiz[q.id]"
+              class="mt-3 p-3.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/60 text-xs sm:text-sm">
+              <p class="font-bold text-indigo-700 dark:text-indigo-300 mb-1">
+                💡 Explicación y porqué técnico:
+              </p>
+              <p class="text-slate-700 dark:text-slate-300 leading-relaxed">{{ q.explicacion }}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- MÓDULO 4: LABORATORIO DE 5 CALCULADORAS INTERACTIVAS DE REDES       -->
+      <!-- =================================================================== -->
+      <section v-if="vistaActiva === 'calculadoras'" class="space-y-4">
+        <!-- Selector de calculadora -->
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            <button @click="calcActiva = 'ts'"
+              :class="calcActiva === 'ts' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800'"
+              class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition">
+              ⏱️ 1. Tiempo de Servicio Ts y VoIP (Tema 7)
+            </button>
+            <button @click="calcActiva = 'ip'"
+              :class="calcActiva === 'ip' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800'"
+              class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition">
+              🌐 2. Subredes IPv4 / VLSM / Validador (Tema 8)
+            </button>
+            <button @click="calcActiva = 'frag'"
+              :class="calcActiva === 'frag' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800'"
+              class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition">
+              ✂️ 3. Fragmentación IPv4 y Cascada (Temas 9-10)
+            </button>
+            <button @click="calcActiva = 'tcp'"
+              :class="calcActiva === 'tcp' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800'"
+              class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition">
+              🚀 4. TCP Jacobson RTO y Redes LFN (Tema 10)
+            </button>
+            <button @click="calcActiva = 'shannon'"
+              :class="calcActiva === 'shannon' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800'"
+              class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition">
+              📡 5. Capacidad de Shannon (Tema 2)
+            </button>
+          </div>
+        </div>
+
+        <!-- 4.1 CALCULADORA DE TIEMPO DE SERVICIO Ts = p / (v - c) -->
+        <div v-if="calcActiva === 'ts'" class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div class="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+            <h3 class="font-extrabold text-base text-indigo-600 dark:text-indigo-400">
+              ⏱️ Modelado de Colas M/M/1: Tiempo de Servicio Ts = p / (v - c)
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Reproduce los ejercicios del Tema 7 (7.1 y 7.3) o experimenta con cualquier tamaño de paquete, velocidad de línea y caudal.
+            </p>
+            <div class="grid grid-cols-2 gap-3 text-xs sm:text-sm">
+              <div>
+                <label class="font-semibold block mb-1">Tamaño medio paquete (Bytes)</label>
+                <input v-model.number="calcTs.paqueteBytes" type="number" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="font-semibold block mb-1">Velocidad enlace v (Kbps)</label>
+                <input v-model.number="calcTs.velocidadKbps" type="number" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="font-semibold block mb-1">Caudal actual c (Kbps)</label>
+                <input v-model.number="calcTs.caudalKbps" type="number" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="font-semibold block mb-1">Retardo propagación (ms)</label>
+                <input v-model.number="calcTs.propagacionMs" type="number" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="font-semibold block mb-1">Tope Retardo Total VoIP (ms)</label>
+                <input v-model.number="calcTs.retardoMaxMs" type="number" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="font-semibold block mb-1">Caudal por llamada VoIP (Kbps)</label>
+                <input v-model.number="calcTs.caudalLlamadaKbps" type="number" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2 pt-2">
+              <button @click="calcTs = { paqueteBytes: 500, velocidadKbps: 512, caudalKbps: 0, propagacionMs: 20, retardoMaxMs: 150, caudalLlamadaKbps: 80 }"
+                class="text-xs px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 font-bold">
+                Cargar Ejemplo Diapositiva 30 (500B, 512Kbps)
+              </button>
+              <button @click="calcTs = { paqueteBytes: 1000, velocidadKbps: 2048, caudalKbps: 1024, propagacionMs: 0, retardoMaxMs: 150, caudalLlamadaKbps: 80 }"
+                class="text-xs px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 font-bold">
+                Cargar Ejercicio 7.1 (1000B, 2048Kbps)
+              </button>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70">
+                <div class="text-xs text-slate-400">Tamaño p en bits</div>
+                <div class="text-lg font-extrabold">{{ resultadoCalcTs.pBits }} bits</div>
+                <div class="text-[11px] text-slate-400">Ocupación: {{ resultadoCalcTs.ocupacion }}%</div>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70">
+                <div class="text-xs text-slate-400">T. Transmisión (c=0)</div>
+                <div class="text-lg font-extrabold text-cyan-600 dark:text-cyan-400">{{ resultadoCalcTs.tTransMs }} ms</div>
+                <div class="text-[11px] text-slate-400">Espera cola: {{ resultadoCalcTs.tEsperaMs }} ms</div>
+              </div>
+              <div class="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/60">
+                <div class="text-xs text-indigo-500 font-bold">Tiempo Servicio Ts</div>
+                <div class="text-lg font-extrabold text-indigo-600 dark:text-indigo-300">{{ resultadoCalcTs.tsMs }} ms</div>
+                <div class="text-[11px] text-slate-400">Total + Prop: {{ resultadoCalcTs.retardoTotalMs }} ms</div>
+              </div>
+              <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60">
+                <div class="text-xs text-emerald-600 font-bold">Máx. Llamadas VoIP</div>
+                <div class="text-lg font-extrabold text-emerald-600 dark:text-emerald-300">{{ resultadoCalcTs.maxLlamadas }} llamadas</div>
+                <div class="text-[11px] text-slate-400">Caudal máx: {{ resultadoCalcTs.cMaxKbps }} Kbps ({{ resultadoCalcTs.ocupacionMax }}%)</div>
+              </div>
+            </div>
+
+            <!-- Tabla de evolución según porcentaje de ocupación -->
+            <div>
+              <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400 mb-2">
+                Curva de Crecimiento No Lineal del Retardo según Ocupación del Enlace
+              </h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-xs border-collapse">
+                  <thead>
+                    <tr class="bg-slate-100 dark:bg-slate-800 text-left">
+                      <th class="p-2">Ocupación (%)</th>
+                      <th class="p-2">Caudal c (Kbps)</th>
+                      <th class="p-2">Tiempo Servicio Ts (ms)</th>
+                      <th class="p-2">Retardo Total Ts + Prop (ms)</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    <tr v-for="fila in resultadoCalcTs.tablaCurva" :key="fila.pct">
+                      <td class="p-2 font-bold">{{ fila.pct }}%</td>
+                      <td class="p-2 font-mono">{{ fila.cKbps }} Kbps</td>
+                      <td class="p-2 font-mono font-semibold text-indigo-600 dark:text-indigo-400">{{ fila.tsMs }} ms</td>
+                      <td class="p-2 font-mono">{{ fila.totalMs }} ms</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4.2 CALCULADORA IPV4 / VLSM / DETECTOR DE ERRORES -->
+        <div v-if="calcActiva === 'ip'" class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div class="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+            <h3 class="font-extrabold text-base text-indigo-600 dark:text-indigo-400">
+              🌐 Analizador de Subredes IPv4, Binario y Detector de Errores (Tema 8)
+            </h3>
+            <div class="grid grid-cols-3 gap-3 text-xs sm:text-sm">
+              <div class="col-span-2">
+                <label class="font-semibold block mb-1">Dirección IPv4</label>
+                <input v-model="calcIp.ipStr" type="text" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono" />
+              </div>
+              <div>
+                <label class="font-semibold block mb-1">Prefijo CIDR (/{{ calcIp.prefijo }})</label>
+                <input v-model.number="calcIp.prefijo" type="number" min="1" max="32" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono" />
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button @click="calcIp = { ipStr: '194.125.1.63', prefijo: 26 }" class="text-xs px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white">Ej. 8.3 Host F (194.125.1.63/26)</button>
+              <button @click="calcIp = { ipStr: '194.125.1.128', prefijo: 26 }" class="text-xs px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white">Ej. 8.3 Host B (194.125.1.128/26)</button>
+              <button @click="calcIp = { ipStr: '194.125.1.32', prefijo: 26 }" class="text-xs px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white">Ej. 8.3 Ruta (194.125.1.32/26)</button>
+              <button @click="calcIp = { ipStr: '222.230.14.135', prefijo: 28 }" class="text-xs px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white">Ej. 8.2 (222.230.14.135/28)</button>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+            <div v-if="resultadoCalcIp.error" class="p-4 rounded-xl bg-rose-100 text-rose-800 font-bold text-sm">
+              {{ resultadoCalcIp.error }}
+            </div>
+            <template v-else>
+              <div :class="resultadoCalcIp.tipoAlerta === 'ok' ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-emerald-800 dark:text-emerald-200' : 'bg-rose-50 dark:bg-rose-950/60 border-rose-500 text-rose-800 dark:text-rose-200'"
+                class="p-3.5 rounded-xl border text-xs sm:text-sm font-bold">
+                🔎 Diagnóstico: {{ resultadoCalcIp.diagnosticoHost }}
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs sm:text-sm">
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><span class="text-slate-400 block text-xs">Máscara Decimal</span><strong class="font-mono">{{ resultadoCalcIp.mascara }}</strong></div>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><span class="text-slate-400 block text-xs">Dirección de Subred</span><strong class="font-mono text-indigo-600 dark:text-indigo-400">{{ resultadoCalcIp.subred }}/{{ resultadoCalcIp.prefijo }}</strong></div>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><span class="text-slate-400 block text-xs">Broadcast Dirigido</span><strong class="font-mono text-rose-600 dark:text-rose-400">{{ resultadoCalcIp.broadcast }}</strong></div>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><span class="text-slate-400 block text-xs">Primer Host Útil</span><strong class="font-mono">{{ resultadoCalcIp.primerHost }}</strong></div>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><span class="text-slate-400 block text-xs">Último Host Útil</span><strong class="font-mono">{{ resultadoCalcIp.ultimoHost }}</strong></div>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><span class="text-slate-400 block text-xs">Hosts Utilizables</span><strong>{{ resultadoCalcIp.hostsUtiles }} (de {{ resultadoCalcIp.totalDirs }})</strong></div>
+              </div>
+              <div class="p-3.5 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs space-y-1">
+                <div>IP en Binario: <span class="text-cyan-400">{{ resultadoCalcIp.binIp }}</span></div>
+                <div>Partición Red/Host: <span class="text-emerald-400 font-bold">{{ resultadoCalcIp.bitsRed }}</span><span class="text-amber-400">{{ resultadoCalcIp.bitsHost }}</span> (Verde = Red, Ámbar = Host)</div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- 4.3 SIMULADOR DE FRAGMENTACIÓN IPV4 -->
+        <div v-if="calcActiva === 'frag'" class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div class="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 text-xs sm:text-sm">
+            <h3 class="font-extrabold text-base text-indigo-600 dark:text-indigo-400">✂️ Simulador de Fragmentación IPv4</h3>
+            <div>
+              <label class="font-semibold block mb-1">Carga útil de Datos Originales (Bytes)</label>
+              <input v-model.number="calcFrag.datosOriginales" type="number" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">Cabecera IP (Bytes, típicamente 20)</label>
+              <input v-model.number="calcFrag.cabeceraIp" type="number" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">MTU Enlace 1 (Bytes, ej. 1500)</label>
+              <input v-model.number="calcFrag.mtu1" type="number" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800" />
+            </div>
+            <label class="flex items-center gap-2 font-semibold pt-1">
+              <input v-model="calcFrag.usarMtu2" type="checkbox" />
+              <span>Re-fragmentar en Enlace 2 (Cascada)</span>
+            </label>
+            <div v-if="calcFrag.usarMtu2">
+              <label class="font-semibold block mb-1">MTU Enlace 2 (Bytes, ej. 296 o 620)</label>
+              <input v-model.number="calcFrag.mtu2" type="number" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800" />
+            </div>
+          </div>
+
+          <div class="lg:col-span-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+            <h4 class="font-bold text-sm">Paso 1: Fragmentos en MTU 1 = {{ calcFrag.mtu1 }} B (Máx datos múltiplo de 8 = {{ resultadoCalcFrag.maxDatosMtu1 }} B)</h4>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-100 dark:bg-slate-800 text-left">
+                    <th class="p-2">Fragmento</th><th class="p-2">Long. Total (B)</th><th class="p-2">Datos (B)</th><th class="p-2">Flag MF</th><th class="p-2">Offset (Bytes)</th><th class="p-2">Campo Offset (/8)</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-mono">
+                  <tr v-for="f in resultadoCalcFrag.paso1" :key="f.nombre">
+                    <td class="p-2 font-bold">{{ f.nombre }}</td><td class="p-2">{{ f.longitudTotal }}</td><td class="p-2">{{ f.datos }}</td><td class="p-2">{{ f.mf }}</td><td class="p-2">{{ f.offsetBytes }}</td><td class="p-2 font-bold text-indigo-600 dark:text-indigo-400">{{ f.offset8 }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <template v-if="calcFrag.usarMtu2">
+              <h4 class="font-bold text-sm pt-2">Paso 2: Re-fragmentación en MTU 2 = {{ calcFrag.mtu2 }} B ({{ resultadoCalcFrag.paso2.length }} fragmentos totales)</h4>
+              <div class="overflow-x-auto max-h-64">
+                <table class="w-full text-xs border-collapse">
+                  <thead>
+                    <tr class="bg-slate-100 dark:bg-slate-800 text-left">
+                      <th class="p-2">Sub-Frag</th><th class="p-2">Long. Total (B)</th><th class="p-2">Datos (B)</th><th class="p-2">Flag MF</th><th class="p-2">Offset (Bytes)</th><th class="p-2">Campo Offset (/8)</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-mono">
+                    <tr v-for="f in resultadoCalcFrag.paso2" :key="f.nombre">
+                      <td class="p-2 font-bold">{{ f.nombre }}</td><td class="p-2">{{ f.longitudTotal }}</td><td class="p-2">{{ f.datos }}</td><td class="p-2">{{ f.mf }}</td><td class="p-2">{{ f.offsetBytes }}</td><td class="p-2 font-bold text-emerald-600 dark:text-emerald-400">{{ f.offset8 }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- 4.4 CALCULADORA TCP RTO (JACOBSON) Y LFN WINDOW SCALE -->
+        <div v-if="calcActiva === 'tcp'" class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div class="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 text-xs sm:text-sm">
+            <h3 class="font-extrabold text-base text-indigo-600 dark:text-indigo-400">🚀 TCP: Algoritmo de Van Jacobson (RTO) y Redes LFN</h3>
+            <div>
+              <label class="font-semibold block mb-1">Secuencia de RTTs medidos en ms (separados por coma)</label>
+              <textarea v-model="calcTcp.rttsInput" rows="2" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800 font-mono text-xs"></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <div>
+                <label class="font-semibold block mb-1">Ancho de Banda LFN (Mbps)</label>
+                <input v-model.number="calcTcp.bwMbps" type="number" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800" />
+              </div>
+              <div>
+                <label class="font-semibold block mb-1">RTT del Enlace LFN (ms)</label>
+                <input v-model.number="calcTcp.rttMs" type="number" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800" />
+              </div>
+            </div>
+            <div class="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-xs space-y-1">
+              <div><strong>Producto BW × RTT (BDP):</strong> {{ resultadoCalcTcp.bdpBits }} bits ({{ resultadoCalcTcp.bdpKB }} KB)</div>
+              <div><strong>Caudal máx. sin Window Scale (64 KB):</strong> {{ resultadoCalcTcp.maxSinEscalaMbps }} Mbps</div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+            <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400">Evolución de SRTT, RTTVAR y Timer RTO = SRTT + 4·RTTVAR</h4>
+            <div class="overflow-x-auto max-h-56">
+              <table class="w-full text-xs border-collapse font-mono">
+                <thead>
+                  <tr class="bg-slate-100 dark:bg-slate-800 text-left">
+                    <th class="p-2">#</th><th class="p-2">RTT Medido (ms)</th><th class="p-2">SRTT (ms)</th><th class="p-2">RTTVAR (ms)</th><th class="p-2">Timer RTO (ms)</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tr v-for="r in resultadoCalcTcp.filasRto" :key="r.n">
+                    <td class="p-2">{{ r.n }}</td><td class="p-2 font-bold">{{ r.rtt }}</td><td class="p-2">{{ r.srtt }}</td><td class="p-2">{{ r.rttvar }}</td><td class="p-2 font-bold text-indigo-600 dark:text-indigo-400">{{ r.rto }} ms</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400 pt-2">Tabla de Factor de Escala de Ventana TCP (RFC 1323)</h4>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs border-collapse font-mono">
+                <thead>
+                  <tr class="bg-slate-100 dark:bg-slate-800 text-left">
+                    <th class="p-2">Factor s</th><th class="p-2">Multiplicador</th><th class="p-2">Ventana Máx</th><th class="p-2">Caudal Máx Posible</th><th class="p-2">¿Satura {{ calcTcp.bwMbps }} Mbps?</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tr v-for="esc in resultadoCalcTcp.tablaEscala" :key="esc.s">
+                    <td class="p-2 font-bold">s = {{ esc.s }}</td><td class="p-2">{{ esc.mult }}</td><td class="p-2">{{ esc.winKB }}</td><td class="p-2 font-bold">{{ esc.caudalMbps }} Mbps</td>
+                    <td class="p-2"><span :class="esc.aprovecha100 ? 'text-emerald-500 font-bold' : 'text-amber-500'">{{ esc.aprovecha100 ? '✔ Sí (100%)' : 'No (Limitado por ventana)' }}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4.5 CALCULADORA LEY DE SHANNON -->
+        <div v-if="calcActiva === 'shannon'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+            <h3 class="font-extrabold text-base text-indigo-600 dark:text-indigo-400">📡 Capacidad Máxima de Canal — Ley de Shannon (Tema 2)</h3>
+            <div class="grid grid-cols-2 gap-3 text-xs sm:text-sm">
+              <div>
+                <label class="font-semibold block mb-1">Ancho de Banda BW (kHz)</label>
+                <input v-model.number="calcShannon.bwKhz" type="number" step="0.1" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800" />
+              </div>
+              <div>
+                <label class="font-semibold block mb-1">Relación Señal/Ruido S/N (dB)</label>
+                <input v-model.number="calcShannon.snrDb" type="number" step="1" class="w-full p-2 rounded-lg bg-slate-100 dark:bg-slate-800" />
+              </div>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm grid grid-cols-2 gap-3">
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><span class="text-xs text-slate-400 block">S/N Lineal (10^(dB/10))</span><strong class="text-lg">{{ resultadoShannon.snrLineal }}</strong></div>
+            <div class="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/60"><span class="text-xs text-indigo-500 block font-bold">Capacidad Exacta</span><strong class="text-lg text-indigo-600 dark:text-indigo-300">{{ resultadoShannon.capExactaKbps }} kbps</strong></div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><span class="text-xs text-slate-400 block">Aprox. AulaClic (BW·dB/3)</span><strong class="text-lg">{{ resultadoShannon.capAproxKbps }} kbps</strong></div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><span class="text-xs text-slate-400 block">Eficiencia Espectral</span><strong class="text-lg">{{ resultadoShannon.eficExacta }} bps/Hz</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- MÓDULO 5: FLASHCARDS INTERACTIVAS Y FORMULARIO DE EXAMEN            -->
+      <!-- =================================================================== -->
+      <section v-if="vistaActiva === 'flashcards'" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Flashcards interactivas -->
+        <div class="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col justify-between space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="font-extrabold text-base">⚡ Tarjetas de Memorización Rápida (Flashcards)</h2>
+            <span class="text-xs font-mono px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800">
+              {{ flashcardIdx + 1 }} / {{ flashcardsFiltradas.length }}
+            </span>
+          </div>
+
+          <div v-if="flashcardsFiltradas[flashcardIdx]"
+            @click="flashcardGirada = !flashcardGirada"
+            class="min-h-[240px] p-6 rounded-2xl border-2 border-dashed border-indigo-400/60 bg-gradient-to-br from-indigo-50/60 to-cyan-50/40 dark:from-indigo-950/40 dark:to-slate-900 flex flex-col items-center justify-center text-center cursor-pointer select-none transition hover:scale-[1.01]">
+            <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-600 text-white mb-3">
+              Tema {{ flashcardsFiltradas[flashcardIdx].tema }} · {{ flashcardGirada ? 'RESPUESTA' : 'PREGUNTA (Haz clic para girar)' }}
+            </span>
+            <p class="font-bold text-base sm:text-lg leading-relaxed">
+              {{ flashcardGirada ? (flashcardsFiltradas[flashcardIdx].dorso || flashcardsFiltradas[flashcardIdx].reverso) : flashcardsFiltradas[flashcardIdx].frente }}
+            </p>
+          </div>
+
+          <div class="flex items-center justify-between gap-2">
+            <button @click="flashcardIdx = (flashcardIdx - 1 + flashcardsFiltradas.length) % flashcardsFiltradas.length; flashcardGirada = false"
+              class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">◀ Anterior</button>
+            <button @click="flashcardGirada = !flashcardGirada"
+              class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold">🔄 Girar Tarjeta</button>
+            <button @click="flashcardIdx = (flashcardIdx + 1) % flashcardsFiltradas.length; flashcardGirada = false"
+              class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">Siguiente ▶</button>
+          </div>
+        </div>
+
+        <!-- Formulario / Chuleta Técnica de Fórmulas -->
+        <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+          <h2 class="font-extrabold text-base">📐 Formulario Maestro de Redes (Resumen para Examen)</h2>
+          <div v-for="grupo in formulario" :key="grupo.categoria" class="space-y-2">
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">{{ grupo.categoria }}</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div v-for="f in grupo.items" :key="f.nombre"
+                class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span class="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 block">{{ f.nombre }}</span>
+                <div class="font-mono text-xs font-bold bg-white dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-800 text-indigo-600 dark:text-indigo-300">
+                  {{ f.formula }}
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400">{{ f.desc }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- MÓDULO 7: APARTADO ESPECIAL DE EXAMEN (examen.md — 9 PREGUNTAS)     -->
+      <!-- =================================================================== -->
+      <section v-if="vistaActiva === 'examen'" class="space-y-4">
+        <!-- Cabecera y selector de los 4 modos de estudio de examen.md -->
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full bg-amber-500 text-white text-xs font-extrabold">Guía Oficial</span>
+                <span class="text-xs font-mono text-slate-400">Archivo: examen.md</span>
+              </div>
+              <h2 class="text-lg sm:text-xl font-extrabold mt-1">
+                🎓 Preparación Intensiva del Examen Oficial (9 Preguntas Clave de Redes)
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                Incluye las respuestas exactas de <code class="font-mono">examen.md</code>, su conexión con las diapositivas de AulaClic, práctica escrita ocultando respuestas y test rápido.
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
+                ✔ Dominadas: {{ statsExamenMd.dominadas }}/{{ statsExamenMd.total }} ({{ statsExamenMd.porcentaje }}%)
+              </div>
+              <button @click="abrirExamenMdEnVisor('md-render')"
+                class="px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-500 transition">
+                📝 Abrir examen.md en Visor
+              </button>
+            </div>
+          </div>
+
+          <!-- Pestañas de los 4 modos de estudio de examen.md -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div class="flex flex-wrap gap-2">
+              <button @click="modoEstudioExamen = 'tarjetas'"
+                :class="modoEstudioExamen === 'tarjetas' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-100 dark:bg-slate-800'"
+                class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition">
+                📖 1. Tarjetas de Estudio y Ampliación (9)
+              </button>
+              <button @click="modoEstudioExamen = 'practica'"
+                :class="modoEstudioExamen === 'practica' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-100 dark:bg-slate-800'"
+                class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition">
+                ✍️ 2. Simulador Escrito (Ocultar Respuestas)
+              </button>
+              <button @click="modoEstudioExamen = 'quiz'"
+                :class="modoEstudioExamen === 'quiz' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-100 dark:bg-slate-800'"
+                class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition">
+                🎯 3. Test Tipo Quiz de examen.md
+              </button>
+              <button @click="modoEstudioExamen = 'documento'"
+                :class="modoEstudioExamen === 'documento' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-100 dark:bg-slate-800'"
+                class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition">
+                📝 4. Documento examen.md Original
+              </button>
+            </div>
+            <input v-if="modoEstudioExamen === 'tarjetas'" v-model="busquedaExamenMd" type="text"
+              placeholder="Filtrar pregunta (ej. UDP, HSRP, RST, Broadcast, L4)..."
+              class="w-full sm:w-72 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm" />
+          </div>
+        </div>
+
+        <!-- MODO 7.1: TARJETAS DE ESTUDIO CON RESPUESTA OFICIAL + AMPLIACIÓN DEL CURSO -->
+        <div v-if="modoEstudioExamen === 'tarjetas'" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div v-for="p in preguntasExamenFiltradas" :key="p.id"
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col justify-between space-y-3">
+            <div class="space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+                  {{ p.temaRelacionado }}
+                </span>
+                <div class="flex items-center gap-1.5">
+                  <button @click="marcarDominioExamen(p.id, 'dominada')"
+                    :class="estadoDominioExamen[p.id] === 'dominada' ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
+                    class="px-2.5 py-1 rounded-lg text-xs font-bold transition">✔ Dominada</button>
+                  <button @click="marcarDominioExamen(p.id, 'repaso')"
+                    :class="estadoDominioExamen[p.id] === 'repaso' ? 'bg-amber-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
+                    class="px-2.5 py-1 rounded-lg text-xs font-bold transition">📌 Repasar</button>
+                </div>
+              </div>
+
+              <h3 class="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">
+                {{ p.pregunta }}
+              </h3>
+
+              <!-- Respuesta oficial literal de examen.md -->
+              <div class="p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 space-y-1.5">
+                <div class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                  ✅ Respuesta Oficial (examen.md)
+                </div>
+                <p v-for="(linea, idxL) in p.respuestaOficial" :key="idxL" class="text-xs sm:text-sm leading-relaxed font-medium">
+                  • {{ linea }}
+                </p>
+              </div>
+
+              <!-- Ampliación técnica conectada con las diapositivas de AulaClic -->
+              <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 space-y-1">
+                <div class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                  🔎 Contexto y Ampliación en Diapositivas AulaClic
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  {{ p.ampliacionCurso }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Píldoras de memoria rápida -->
+            <div class="flex flex-wrap gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <span v-for="c in p.clavesMemoria" :key="c"
+                class="text-[11px] px-2.5 py-0.5 rounded-full bg-amber-100/80 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 font-semibold">
+                🔑 {{ c }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODO 7.2: SIMULADOR DE EXAMEN ESCRITO (OCULTAR RESPUESTAS Y AUTOCOMPROBAR) -->
+        <div v-else-if="modoEstudioExamen === 'practica'" class="space-y-4">
+          <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+            <span>✍️ <strong>Modo Práctica Activa:</strong> Redacta tu respuesta para cada una de las 9 preguntas sin mirar y luego pulsa «Comprobar Respuesta Oficial».</span>
+            <div class="flex gap-2">
+              <button @click="examenMd.preguntas.forEach(p => revelarPracticaExamen[p.id] = true)"
+                class="px-3 py-1 rounded-lg bg-indigo-600 text-white font-bold text-xs">👁️ Mostrar Todas</button>
+              <button @click="revelarPracticaExamen = {}; respuestasPracticaExamen = {}"
+                class="px-3 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 font-bold text-xs">🔄 Reiniciar Práctica</button>
+            </div>
+          </div>
+
+          <div v-for="p in examenMd.preguntas" :key="p.id"
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="font-extrabold text-sm sm:text-base">{{ p.pregunta }}</h3>
+              <span class="text-xs text-slate-400">{{ p.temaRelacionado }}</span>
+            </div>
+            <textarea v-model="respuestasPracticaExamen[p.id]" rows="2"
+              placeholder="Escribe aquí tu respuesta de examen antes de comprobar..."
+              class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm"></textarea>
+            <div class="flex items-center justify-between">
+              <button @click="revelarPracticaExamen[p.id] = !revelarPracticaExamen[p.id]"
+                class="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-500 transition">
+                {{ revelarPracticaExamen[p.id] ? '🙈 Ocultar Respuesta Oficial' : '👁️ Comprobar con Respuesta Oficial de examen.md' }}
+              </button>
+              <div v-if="revelarPracticaExamen[p.id]" class="flex items-center gap-2">
+                <button @click="marcarDominioExamen(p.id, 'dominada')"
+                  :class="estadoDominioExamen[p.id] === 'dominada' ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800'"
+                  class="px-3 py-1 rounded-lg text-xs font-bold">✅ La supe responder</button>
+                <button @click="marcarDominioExamen(p.id, 'repaso')"
+                  :class="estadoDominioExamen[p.id] === 'repaso' ? 'bg-amber-500 text-white' : 'bg-slate-100 dark:bg-slate-800'"
+                  class="px-3 py-1 rounded-lg text-xs font-bold">📌 Necesito repasarla</button>
+              </div>
+            </div>
+            <div v-if="revelarPracticaExamen[p.id]"
+              class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 space-y-1 text-xs sm:text-sm">
+              <p v-for="(linea, i) in p.respuestaOficial" :key="i" class="font-semibold">• {{ linea }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODO 7.3: TEST TIPO QUIZ DE LAS 9 PREGUNTAS DE EXAMEN.MD -->
+        <div v-else-if="modoEstudioExamen === 'quiz'" class="space-y-4">
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-2">
+            <div class="text-sm font-bold">
+              🎯 Resultado en el Test de <code class="font-mono">examen.md</code>:
+              <span class="text-emerald-600 dark:text-emerald-400 ml-1">{{ resumenQuizExamen.aciertos }} aciertos</span> de {{ resumenQuizExamen.respondidas }} respondidas ({{ resumenQuizExamen.porcentaje }}%)
+            </div>
+            <button @click="respuestasQuizExamen = {}"
+              class="px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">🔄 Reiniciar Test</button>
+          </div>
+
+          <div v-for="p in examenMd.preguntas" :key="p.id"
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+            <h3 class="font-bold text-sm sm:text-base">{{ p.pregunta }}</h3>
+            <div class="grid grid-cols-1 gap-2">
+              <button v-for="(op, idxOp) in p.quiz.opciones" :key="idxOp"
+                @click="respuestasQuizExamen[p.id] = idxOp"
+                :class="[
+                  respuestasQuizExamen[p.id] === undefined
+                    ? 'bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border-slate-200 dark:border-slate-700'
+                    : idxOp === p.quiz.correcta
+                      ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-emerald-900 dark:text-emerald-200 font-semibold'
+                      : respuestasQuizExamen[p.id] === idxOp
+                        ? 'bg-rose-50 dark:bg-rose-950/60 border-rose-500 text-rose-900 dark:text-rose-200'
+                        : 'bg-slate-50 dark:bg-slate-800/30 border-slate-200 dark:border-slate-800 opacity-60'
+                ]"
+                class="text-left p-3 rounded-xl border text-xs sm:text-sm transition flex items-center justify-between gap-2">
+                <span><strong class="mr-1.5">{{ ['A', 'B', 'C', 'D'][idxOp] }}.</strong> {{ op }}</span>
+                <span v-if="respuestasQuizExamen[p.id] !== undefined">
+                  <template v-if="idxOp === p.quiz.correcta">✅</template>
+                  <template v-else-if="respuestasQuizExamen[p.id] === idxOp">❌</template>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODO 7.4: ARCHIVO ORIGINAL EXAMEN.MD RENDERIZADO Y CÓDIGO FUENTE -->
+        <div v-else-if="modoEstudioExamen === 'documento'" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+            <h3 class="font-extrabold text-sm uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-3">
+              📖 Vista Renderizada de examen.md
+            </h3>
+            <div class="markdown-body text-sm sm:text-base" v-html="renderMarkdown(examenMd.rawMarkdown)"></div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-2">
+            <div class="flex items-center justify-between">
+              <h3 class="font-extrabold text-sm uppercase tracking-wider text-slate-500">💻 Código Fuente Original (examen.md)</h3>
+              <button @click="copiarMdActual(examenMd.rawMarkdown)"
+                class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold">
+                {{ copiadoMdExito ? '✔ Copiado' : '📋 Copiar examen.md' }}
+              </button>
+            </div>
+            <pre class="p-4 rounded-xl bg-slate-950 text-slate-100 font-mono text-xs sm:text-sm whitespace-pre-wrap">{{ examenMd.rawMarkdown }}</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- MÓDULO 6: EXPLORADOR DEL CURSO, BIBLIOTECA DE 53 ARCHIVOS .MD Y PDFS -->
+      <!-- =================================================================== -->
+      <section v-if="vistaActiva === 'temario'" class="space-y-4">
+        <!-- Barra superior de selección dentro de Curso y Archivos -->
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <button @click="subvistaTemario = 'diapositivas'"
+              :class="subvistaTemario === 'diapositivas' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-100 dark:bg-slate-800'"
+              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition">
+              🗂️ Explorador de los 11 Temas, 1.421 Diapositivas y 176 Subtemas PDF
+            </button>
+            <button @click="subvistaTemario = 'archivos_md'"
+              :class="subvistaTemario === 'archivos_md' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-100 dark:bg-slate-800'"
+              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition">
+              📝 Biblioteca Integrada de los 53 Archivos .MD y PDFs de Ejercicios
+            </button>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button @click="abrirVisorMdPorId('md-indice-general', 'md-render')"
+              class="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 text-xs font-bold hover:bg-indigo-100 transition">
+              📝 Abrir Índice Maestro .MD en la App
+            </button>
+            <button @click="abrirVisorPdf('../Redes_AulaClic_Completo.pdf', 'Curso Completo Redes AulaClic (1.421 páginas)')"
+              class="px-3 py-1.5 rounded-xl bg-cyan-50 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 text-xs font-bold hover:bg-cyan-100 transition">
+              📄 Abrir PDF Curso Completo (1.421 págs.)
+            </button>
+          </div>
+        </div>
+
+        <!-- SUBVISTA 6.1: TEMAS, DIAPOSITIVAS Y SUBTEMAS PDF -->
+        <div v-if="subvistaTemario === 'diapositivas'" class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+          <aside class="lg:col-span-4 xl:col-span-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-2">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
+              <h2 class="font-extrabold text-sm">🗂️ Los 11 Temas del Curso</h2>
+            </div>
+            <button v-for="t in curso" :key="t.numero"
+              @click="seleccionarTemaCurso(t)"
+              :class="temaCursoSeleccionado && temaCursoSeleccionado.numero === t.numero ? 'bg-indigo-600 text-white font-bold' : 'hover:bg-slate-100 dark:hover:bg-slate-800'"
+              class="w-full text-left p-2.5 rounded-xl text-xs sm:text-sm transition flex items-center justify-between">
+              <span class="truncate">T{{ t.numero }}. {{ t.titulo }}</span>
+              <span class="text-[11px] opacity-80">{{ t.totalSlides }} diapos</span>
+            </button>
+          </aside>
+
+          <div v-if="temaCursoSeleccionado" class="lg:col-span-8 xl:col-span-9 space-y-4">
+            <!-- Visor de las diapositivas del tema -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <h3 class="font-extrabold text-base sm:text-lg">Tema {{ temaCursoSeleccionado.numero }}: {{ temaCursoSeleccionado.titulo }}</h3>
+                  <p class="text-xs text-slate-400">Explorando diapositiva #{{ slideCursoActual }} de {{ temaCursoSeleccionado.totalSlides }}</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <button v-if="temaCursoSeleccionado.mdTemaId"
+                    @click="abrirVisorMdPorId(temaCursoSeleccionado.mdTemaId, 'md-render')"
+                    class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-xs font-bold hover:bg-emerald-100 transition">
+                    📝 Abrir Solucionario .MD del Tema {{ temaCursoSeleccionado.numero }}
+                  </button>
+                  <button @click="abrirVisorPdf(temaCursoSeleccionado.pdfTema, 'Tema ' + temaCursoSeleccionado.numero + ': ' + temaCursoSeleccionado.titulo)"
+                    class="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 text-xs font-bold hover:bg-indigo-100 transition">
+                    📄 Abrir PDF del Tema {{ temaCursoSeleccionado.numero }} en la App
+                  </button>
+                  <button @click="slideCursoActual = Math.max(1, slideCursoActual - 1)" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">◀</button>
+                  <input v-model.number="slideCursoActual" type="number" min="1" :max="temaCursoSeleccionado.totalSlides"
+                    class="w-16 text-center p-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-mono font-bold" />
+                  <button @click="slideCursoActual = Math.min(temaCursoSeleccionado.totalSlides, slideCursoActual + 1)" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">▶</button>
+                </div>
+              </div>
+
+              <div v-if="temaCursoSeleccionado.slides[slideCursoActual - 1]" class="grid grid-cols-1 xl:grid-cols-12 gap-4 items-center">
+                <div class="xl:col-span-7 flex justify-center bg-slate-100 dark:bg-slate-950 p-2 rounded-xl">
+                  <img :src="temaCursoSeleccionado.slides[slideCursoActual - 1].img"
+                    @click="modalImagenUrl = temaCursoSeleccionado.slides[slideCursoActual - 1].img"
+                    class="max-h-[420px] object-contain rounded-lg cursor-zoom-in" />
+                </div>
+                <div class="xl:col-span-5 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 text-xs whitespace-pre-wrap max-h-[380px] overflow-y-auto">
+                  {{ temaCursoSeleccionado.slides[slideCursoActual - 1].t }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Lista de Subtemas en PDF de este Tema (Se abren dentro de la App) -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+              <h4 class="font-bold text-sm mb-3">📂 Subtemas en PDF del Tema {{ temaCursoSeleccionado.numero }} ({{ temaCursoSeleccionado.subtemas.length }} archivos — Clic para abrir dentro de la App)</h4>
+              <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
+                <button v-for="sub in temaCursoSeleccionado.subtemas" :key="sub.slug"
+                  @click="abrirVisorPdf(sub.pdf, 'Subtema ' + sub.codigo + ' — ' + sub.titulo)"
+                  class="text-left p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 border border-slate-200 dark:border-slate-800 text-xs flex items-center justify-between gap-2 transition">
+                  <span class="truncate"><strong>{{ sub.codigo }}</strong> · {{ sub.titulo }}</span>
+                  <span class="shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-bold">Abrir PDF</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBVISTA 6.2: BIBLIOTECA INTEGRADA DE LOS 53 ARCHIVOS .MD Y SUS PDFS -->
+        <div v-else class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+          <aside class="lg:col-span-4 xl:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm lg:sticky lg:top-20 max-h-[calc(100vh-6rem)] flex flex-col gap-3">
+            <div>
+              <h3 class="font-extrabold text-sm">📝 Los 53 Documentos .MD del Proyecto ({{ documentosMdFiltrados.length }})</h3>
+              <p class="text-xs text-slate-400">Haz clic en cualquier archivo .MD para leerlo renderizado, ver su código fuente o compararlo lado a lado con su PDF.</p>
+            </div>
+            <input v-model="busquedaArchivoMd" type="text"
+              placeholder="Filtrar archivo .md o contenido..."
+              class="w-full px-3 py-2 text-xs rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+            <div class="flex gap-1 text-xs">
+              <button @click="filtroTipoMd = 'todos'" :class="filtroTipoMd === 'todos' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800'" class="flex-1 py-1 rounded-lg font-bold">Todos (53)</button>
+              <button @click="filtroTipoMd = 'indice'" :class="filtroTipoMd === 'indice' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800'" class="flex-1 py-1 rounded-lg font-bold">Índice (1)</button>
+              <button @click="filtroTipoMd = 'tema'" :class="filtroTipoMd === 'tema' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800'" class="flex-1 py-1 rounded-lg font-bold">Por Tema (10)</button>
+              <button @click="filtroTipoMd = 'subtema'" :class="filtroTipoMd === 'subtema' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800'" class="flex-1 py-1 rounded-lg font-bold">Subtemas (42)</button>
+            </div>
+            <div class="overflow-y-auto flex-1 divide-y divide-slate-100 dark:divide-slate-800 pr-1">
+              <button v-for="doc in documentosMdFiltrados" :key="doc.id"
+                @click="docMdSeleccionado = doc"
+                :class="docMdSeleccionado && docMdSeleccionado.id === doc.id ? 'bg-indigo-50 dark:bg-indigo-950/70 border-l-4 border-indigo-600' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'"
+                class="w-full text-left p-2.5 rounded-lg transition">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300">
+                    {{ doc.tipo === 'indice' ? 'Índice Maestro' : doc.tipo === 'tema' ? 'Tema Completo' : 'Ejercicio ' + doc.codigo }}
+                  </span>
+                  <span class="text-[10px] font-mono text-slate-400 truncate">{{ doc.nombreArchivo }}</span>
+                </div>
+                <p class="text-xs font-semibold mt-1 truncate">{{ doc.titulo }}</p>
+              </button>
+            </div>
+          </aside>
+
+          <!-- Visor en línea del archivo .MD seleccionado -->
+          <div v-if="docMdSeleccionado" class="lg:col-span-8 xl:col-span-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div>
+                <span class="text-xs font-mono text-indigo-600 dark:text-indigo-400">{{ docMdSeleccionado.nombreArchivo }}</span>
+                <h3 class="font-extrabold text-base sm:text-lg">{{ docMdSeleccionado.titulo }}</h3>
+              </div>
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button @click="modoLecturaMdInline = 'render'"
+                  :class="modoLecturaMdInline === 'render' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800'"
+                  class="px-3 py-1.5 rounded-xl text-xs font-bold">📖 Vista Renderizada (.MD)</button>
+                <button @click="modoLecturaMdInline = 'raw'"
+                  :class="modoLecturaMdInline === 'raw' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800'"
+                  class="px-3 py-1.5 rounded-xl text-xs font-bold">💻 Código Fuente (.MD)</button>
+                <button v-if="docMdSeleccionado.pdfAsociado" @click="modoLecturaMdInline = 'pdf'"
+                  :class="modoLecturaMdInline === 'pdf' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800'"
+                  class="px-3 py-1.5 rounded-xl text-xs font-bold">📄 Ver PDF Asociado</button>
+                <button v-if="docMdSeleccionado.pdfAsociado" @click="modoLecturaMdInline = 'split'"
+                  :class="modoLecturaMdInline === 'split' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800'"
+                  class="px-3 py-1.5 rounded-xl text-xs font-bold">⚖️ Dividido (PDF + .MD)</button>
+                <button @click="abrirVisorMdDoc(docMdSeleccionado, modoLecturaMdInline === 'raw' ? 'md-raw' : modoLecturaMdInline === 'pdf' ? 'pdf' : modoLecturaMdInline === 'split' ? 'split' : 'md-render')"
+                  class="px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-50 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300">
+                  ⛶ Pantalla Completa
+                </button>
+              </div>
+            </div>
+
+            <!-- Contenido según el modo elegido -->
+            <div v-if="modoLecturaMdInline === 'render'"
+              @click="manejarClickMarkdown($event)"
+              class="markdown-body math-container text-sm sm:text-base max-h-[75vh] overflow-y-auto pr-2"
+              v-html="renderMarkdown(docMdSeleccionado.contenido)">
+            </div>
+            <div v-else-if="modoLecturaMdInline === 'raw'" class="space-y-2">
+              <div class="flex justify-end">
+                <button @click="copiarMdActual(docMdSeleccionado.contenido)"
+                  class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold">
+                  {{ copiadoMdExito ? '✔ Copiado' : '📋 Copiar Código .MD' }}
+                </button>
+              </div>
+              <pre class="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs whitespace-pre-wrap max-h-[72vh] overflow-y-auto">{{ docMdSeleccionado.contenido }}</pre>
+            </div>
+            <div v-else-if="modoLecturaMdInline === 'pdf'" class="h-[75vh]">
+              <iframe :src="docMdSeleccionado.pdfAsociado" class="w-full h-full rounded-xl border border-slate-200 dark:border-slate-800"></iframe>
+            </div>
+            <div v-else-if="modoLecturaMdInline === 'split'" class="grid grid-cols-1 xl:grid-cols-2 gap-4 h-[75vh]">
+              <iframe :src="docMdSeleccionado.pdfAsociado" class="w-full h-full rounded-xl border border-slate-200 dark:border-slate-800"></iframe>
+              <div @click="manejarClickMarkdown($event)"
+                class="markdown-body math-container text-xs sm:text-sm h-full overflow-y-auto p-3 rounded-xl border border-slate-200 dark:border-slate-800"
+                v-html="renderMarkdown(docMdSeleccionado.contenido)">
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- =================================================================== -->
+    <!-- VISOR INTEGRADO MODAL DE DOCUMENTOS (.MD RENDER, .MD RAW, .PDF Y SPLIT) -->
+    <!-- =================================================================== -->
+    <div v-if="visorDoc.abierto"
+      class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-5">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-[1550px] h-[92vh] flex flex-col overflow-hidden">
+        <!-- Barra superior del visor integrado -->
+        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 bg-slate-50 dark:bg-slate-950">
+          <div class="min-w-0">
+            <span class="text-[11px] font-mono text-indigo-600 dark:text-indigo-400 block">{{ visorDoc.nombreArchivo }}</span>
+            <h3 class="font-extrabold text-sm sm:text-base truncate">{{ visorDoc.titulo }}</h3>
+          </div>
+
+          <!-- Conmutador de modo dentro del visor -->
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button v-if="visorDoc.mdContenido"
+              @click="visorDoc.modo = 'md-render'"
+              :class="visorDoc.modo === 'md-render' ? 'bg-indigo-600 text-white' : 'bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-300'"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold transition">
+              📖 Archivo .MD Renderizado
+            </button>
+            <button v-if="visorDoc.mdContenido"
+              @click="visorDoc.modo = 'md-raw'"
+              :class="visorDoc.modo === 'md-raw' ? 'bg-indigo-600 text-white' : 'bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-300'"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold transition">
+              💻 Código Fuente .MD
+            </button>
+            <button v-if="visorDoc.pdfUrl"
+              @click="visorDoc.modo = 'pdf'"
+              :class="visorDoc.modo === 'pdf' ? 'bg-indigo-600 text-white' : 'bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-300'"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold transition">
+              📄 Visor PDF Integrado
+            </button>
+            <button v-if="visorDoc.pdfUrl && visorDoc.mdContenido"
+              @click="visorDoc.modo = 'split'"
+              :class="visorDoc.modo === 'split' ? 'bg-indigo-600 text-white' : 'bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-300'"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold transition">
+              ⚖️ Vista Dividida (PDF + .MD)
+            </button>
+            <button v-if="visorDoc.mdContenido"
+              @click="copiarMdActual(visorDoc.mdContenido)"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-500 transition">
+              {{ copiadoMdExito ? '✔ Copiado' : '📋 Copiar .MD' }}
+            </button>
+            <a v-if="visorDoc.pdfUrl" :href="visorDoc.pdfUrl" target="_blank"
+              class="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-200/70 dark:bg-slate-800 hover:bg-slate-300 transition"
+              title="Abrir PDF en pestaña externa del navegador">
+              ↗ PDF Externo
+            </a>
+            <button @click="cerrarVisorDoc"
+              class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-rose-600 text-white hover:bg-rose-500 transition">
+              ✕ Cerrar
+            </button>
+          </div>
+        </div>
+
+        <!-- Cuerpo del visor integrado -->
+        <div class="flex-1 overflow-hidden p-4 bg-white dark:bg-slate-900">
+          <!-- Modo 1: Archivo .MD Renderizado con KaTeX -->
+          <div v-if="visorDoc.modo === 'md-render'"
+            @click="manejarClickMarkdown($event)"
+            class="h-full overflow-y-auto px-2 sm:px-6 markdown-body math-container text-sm sm:text-base"
+            v-html="renderMarkdown(visorDoc.mdContenido)">
+          </div>
+
+          <!-- Modo 2: Código Fuente .MD Puro -->
+          <div v-else-if="visorDoc.modo === 'md-raw'" class="h-full overflow-y-auto">
+            <pre class="p-4 rounded-xl bg-slate-950 text-slate-100 font-mono text-xs sm:text-sm whitespace-pre-wrap">{{ visorDoc.mdContenido }}</pre>
+          </div>
+
+          <!-- Modo 3: Visor PDF Integrado -->
+          <div v-else-if="visorDoc.modo === 'pdf'" class="h-full w-full">
+            <iframe :src="visorDoc.pdfUrl" class="w-full h-full rounded-xl border border-slate-200 dark:border-slate-800"></iframe>
+          </div>
+
+          <!-- Modo 4: Vista Dividida Lado a Lado (PDF a la izquierda + .MD a la derecha) -->
+          <div v-else-if="visorDoc.modo === 'split'" class="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full">
+            <div class="h-full flex flex-col">
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">📄 Documento PDF Original</div>
+              <iframe :src="visorDoc.pdfUrl" class="w-full flex-1 rounded-xl border border-slate-200 dark:border-slate-800"></iframe>
+            </div>
+            <div class="h-full flex flex-col overflow-hidden">
+              <div class="text-xs font-bold uppercase tracking-wider text-indigo-500 mb-1.5">📝 Solución Explicada ({{ visorDoc.nombreArchivo }})</div>
+              <div @click="manejarClickMarkdown($event)"
+                class="flex-1 overflow-y-auto p-4 rounded-xl border border-slate-200 dark:border-slate-800 markdown-body math-container text-xs sm:text-sm"
+                v-html="renderMarkdown(visorDoc.mdContenido)">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DE ZOOM DE DIAPOSITIVA A PANTALLA COMPLETA -->
+    <div v-if="modalImagenUrl" @click="modalImagenUrl = null"
+      class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 cursor-zoom-out">
+      <img :src="modalImagenUrl" class="max-w-full max-h-[92vh] rounded-xl shadow-2xl border border-white/20" />
+    </div>
+
+  </div>
+
+  <!-- SCRIPTS DE DATOS LOCALES (Sin servidor necesario, funciona con doble clic file://) -->
+  <script src="js/datos_ejercicios.js"></script>
+  <script src="js/datos_curso.js"></script>
+  <script src="js/datos_cuestionarios.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+
