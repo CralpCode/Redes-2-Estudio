@@ -10,10 +10,7 @@ const app = createApp({
     const cuestionarios = ref(window.DATOS_CUESTIONARIOS || {});
     const flashcards = ref(window.DATOS_FLASHCARDS || []);
     const formulario = ref(window.DATOS_FORMULARIO || []);
-<<<<<<< HEAD
     const examenMd = ref(window.DATOS_EXAMEN_MD || { preguntas: [], rawMarkdown: "" });
-=======
->>>>>>> 8ab872533583fd240d0a7a10eeb15241408a1cff
 
     // Navegación principal y tema visual
     const vistaActiva = ref("ejercicios"); // 'ejercicios' | 'buscador' | 'cuestionarios' | 'calculadoras' | 'flashcards' | 'temario'
@@ -763,7 +760,6 @@ const app = createApp({
       }
     };
 
-<<<<<<< HEAD
     // =========================================================================
     // MÓDULO 7: APARTADO ESPECIAL DE EXAMEN (examen.md — 9 Preguntas Oficiales)
     // =========================================================================
@@ -841,8 +837,6 @@ const app = createApp({
       };
     };
 
-=======
->>>>>>> 8ab872533583fd240d0a7a10eeb15241408a1cff
     onMounted(() => {
       renderizarMatematicas();
     });
@@ -855,10 +849,7 @@ const app = createApp({
       cuestionarios,
       flashcards,
       formulario,
-<<<<<<< HEAD
       examenMd,
-=======
->>>>>>> 8ab872533583fd240d0a7a10eeb15241408a1cff
       vistaActiva,
       modoOscuro,
       progresoEjercicios,
@@ -930,7 +921,6 @@ const app = createApp({
       docMdSeleccionado,
       modoLecturaMdInline,
 
-<<<<<<< HEAD
       // Módulo 7: Apartado Especial examen.md
       modoEstudioExamen,
       busquedaExamenMd,
@@ -944,8 +934,6 @@ const app = createApp({
       resumenQuizExamen,
       abrirExamenMdEnVisor,
 
-=======
->>>>>>> 8ab872533583fd240d0a7a10eeb15241408a1cff
       // Visor Integrado de Documentos .MD y .PDF
       visorDoc,
       copiadoMdExito,

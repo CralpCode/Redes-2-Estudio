@@ -797,7 +797,6 @@ window.DATOS_FORMULARIO = [
   }
 ];
 
-<<<<<<< HEAD
 // ============================================================================
 // BANCO ESPECIAL DE EXAMEN (examen.md — 9 Preguntas Oficiales + Ampliación + Test)
 // ============================================================================
@@ -1024,5 +1023,3 @@ El broadcast funciona en dos niveles principales:
 };
 
 
-=======
->>>>>>> 8ab872533583fd240d0a7a10eeb15241408a1cff
