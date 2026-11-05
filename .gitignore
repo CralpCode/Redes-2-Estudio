@@ -1,0 +1,35 @@
+# =====================================================================
+# Scripts de generación en Python y caché de ejecución
+# =====================================================================
+*.py
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+.Python
+venv/
+.venv/
+env/
+.env/
+
+# =====================================================================
+# Archivos temporales o duplicados de construcción no usados por la web
+# =====================================================================
+Diapositivas_PNG/temp_ejercicios_completos.pdf
+Redes_AulaClic_Ejercicios_y_Ejemplos_Diapositivas.pdf
+*.log
+run_log.txt
+
+# =====================================================================
+# Sistema operativo e IDE
+# =====================================================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# NOTA PARA GITHUB PAGES (Límite estricto de 100 MB por archivo en GitHub):
+# Descomenta la siguiente línea si decides excluir el PDF único de 114.37 MB
+# en caso de no comprimirlo por debajo de 100 MB:
+# Redes_AulaClic_Completo.pdf
+
